@@ -1,4 +1,4 @@
-import { Country } from "./Country";
+import { Country } from "@domain/entities/Country";
 import { CITY_MAP } from "../type/type";
 
 export class City {
