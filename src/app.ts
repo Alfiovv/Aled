@@ -1,5 +1,6 @@
 import { Hono } from 'hono'
 import { parseBody } from 'hono/utils/body'
+import 'dotenv/config'
 
 export const app = new Hono()
 
