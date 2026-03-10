@@ -3,7 +3,7 @@ import { GetStadiumHandler } from '@infrastructure/handlers/stadium/GetStadiumHa
 
 const stadiumRoute = new Hono();
 
-stadiumRoute.get("", (c) => new GetStadiumHandler().handle(c));
+stadiumRoute.get("/", (c) => new GetStadiumHandler().handle(c));
 
 
 export default stadiumRoute;

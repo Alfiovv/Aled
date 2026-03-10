@@ -3,7 +3,7 @@ import { GetCountryHandler } from '@infrastructure/handlers/country/GetCountryHa
 
 const countryRoutes = new Hono();
 
-countryRoutes.get("", (c) => new GetCountryHandler().handle(c));
+countryRoutes.get("/", (c) => new GetCountryHandler().handle(c));
 
 
 export default countryRoutes;
