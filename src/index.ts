@@ -1,6 +1,6 @@
-import { app } from "./app";
-import { Country } from "./domain/entities/Country";
-import { City } from "./domain/entities/City";
+import { app } from "@infrastructure/app";
+import { Country } from "@domain/entities/Country";
+import { City } from "@domain/entities/City";
 
 
 
