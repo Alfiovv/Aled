@@ -1,7 +1,6 @@
-import { Context, Hono } from 'hono'
-import { MATCHS } from '@infrastructure/mock/matchs'
-import { GetMatchByIdHandler } from '@infrastructure/handlers/GetMatchByIdHandler';
-import { GetMatchsHandler } from '@infrastructure/handlers/GetMatchsHandler';
+import { Hono } from 'hono'
+import { GetMatchByIdHandler } from '@infrastructure/handlers/matchs/GetMatchByIdHandler';
+import { GetMatchsHandler } from '@infrastructure/handlers/matchs/GetMatchsHandler';
 
 const matchsRoutes = new Hono();
 
