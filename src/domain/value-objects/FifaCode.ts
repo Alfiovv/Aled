@@ -3,7 +3,7 @@ export class FifaCode {
 
     constructor(value: string) {
         if (!/^[A-Z]{3}$/.test(value)) {
-            throw new Error("FifaCode must be 3 uppercase letters");
+            throw new Error("FifaCode doit contenir que 3 lettres Majuscules");
         }
         this.value = value;
     }
