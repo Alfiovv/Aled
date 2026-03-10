@@ -1,7 +1,7 @@
 import { Hono } from 'hono'
 import { parseBody } from 'hono/utils/body'
 import 'dotenv/config'
-import { MATCHS } from 'mock/matchs'
+import { MATCHS } from '@infrastructure/mock/matchs'
 
 export const app = new Hono()
 

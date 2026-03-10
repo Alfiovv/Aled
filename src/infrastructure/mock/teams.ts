@@ -1,5 +1,5 @@
 import { Team } from "@domain/entities/Team";
-import { FifaCode } from "../domain/value-objects/FifaCode";
+import { FifaCode } from "../../domain/value-objects/FifaCode";
 
 export const TEAMS: Team[] = [
     new Team("USA", new FifaCode("USA")),
