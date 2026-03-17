@@ -1,16 +1,17 @@
 import { TEAMS } from "@infrastructure/mock/teams";
 import { Context } from "hono";
+import { HTTPException } from "hono/http-exception";
 
 export class GetTeamsHandler {
     async handle(c: Context) {
         const sort = c.req.query("sort") || "name";
 
         if (sort !== "name" && sort !== "-name") {
-            return c.json(
-                { success: false, message: "Invalid sort value" },
-                400
-            );
+            throw new HTTPException(400, {
+                message: "Invalid sort value"
+            });
         }
+
         const teamsCopy = [...TEAMS];
 
         teamsCopy.sort((a, b) => {
@@ -18,8 +19,8 @@ export class GetTeamsHandler {
             const nameB = b.name.toUpperCase();
 
             return sort === "name"
-                ? nameA.localeCompare(nameB) // A → Z
-                : nameB.localeCompare(nameA); // Z → A
+                ? nameA.localeCompare(nameB)
+                : nameB.localeCompare(nameA);
         });
 
         return c.json({

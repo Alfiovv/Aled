@@ -1,5 +1,6 @@
 import { STADIUMS } from "@infrastructure/mock/stadiums";
 import { Context } from "hono";
+import { HTTPException } from "hono/http-exception";
 
 export class GetStadiumHandler {
     async handle(c: Context) {
@@ -14,10 +15,10 @@ export class GetStadiumHandler {
         const stadium = STADIUMS.filter(t => t.city.name == sort)
 
         if (!stadium) {
-            return c.json({
-                success: false,
-                error: "City :" + sort + " n'as pas de stade liée."
-            }, 404)
+            throw new HTTPException(404, {
+                message: "City :" + sort + " n'as pas de stade liée."
+            });
+
         } else {
             return c.json({
                 success: true,

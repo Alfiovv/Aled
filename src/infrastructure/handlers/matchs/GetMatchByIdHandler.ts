@@ -1,5 +1,6 @@
 import { MATCHS } from "@infrastructure/mock/matchs";
 import { Context } from "hono";
+import { HTTPException } from "hono/http-exception";
 
 export class GetMatchByIdHandler {
     async handle(c: Context) {
@@ -7,10 +8,10 @@ export class GetMatchByIdHandler {
         const match = MATCHS.find(m => m.id === id);
 
         if (!match) {
-            return c.json({
-                success: false,
-                error: "Match " + id + " does not exist",
-            }, 404);
+            throw new HTTPException
+                (404, {
+                    message: 'Match " + id + " does not exist'
+                })
 
         }
 

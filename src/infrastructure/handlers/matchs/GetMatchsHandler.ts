@@ -1,6 +1,7 @@
 import { FifaCode } from "@domain/value-objects/FifaCode";
 import { MATCHS } from "@infrastructure/mock/matchs";
 import { Context } from "hono";
+import { HTTPException } from "hono/http-exception";
 
 export class GetMatchsHandler {
     async handle(c: Context) {
@@ -9,10 +10,11 @@ export class GetMatchsHandler {
         try {
             fifaCode = new FifaCode(sort || "null");
         } catch (e) {
-            return c.json({
-                success: false,
-                error: "FifaCode " + sort + " ne respecte pas les conditions",
-            }, 400);
+            throw new HTTPException
+                (400, {
+                    message: "FifaCode " + sort + " ne respecte pas les conditions"
+                })
+
         }
         if (sort == undefined) {
             return c.json({
@@ -24,10 +26,10 @@ export class GetMatchsHandler {
         const matchs = MATCHS.filter(t => t.awayTeam.code.value == fifaCode.value || t.homeTeam.code.value == fifaCode.value)
 
         if (!matchs) {
-            return c.json({
-                success: false,
-                error: "L'équipe :" + sort + " n'as pas de match liée."
-            }, 404)
+            throw new HTTPException
+                (404, {
+                    message: "L'équipe :" + sort + " n'as pas de match liée."
+                })
         } else {
             return c.json({
                 success: true,
