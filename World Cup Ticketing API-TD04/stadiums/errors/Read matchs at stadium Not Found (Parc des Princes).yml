@@ -1,15 +1,11 @@
 info:
-  name: Sort teams Bad Request (sort=id)
+  name: Read matchs at stadium Not Found (Parc des Princes)
   type: http
-  seq: 5
+  seq: 2
 
 http:
   method: GET
-  url: "{{host}}/teams?sort=id"
-  params:
-    - name: sort
-      value: id
-      type: query
+  url: "{{host}}/stadiums/Parc des Princes/matchs"
   auth: inherit
 
 runtime:
@@ -18,12 +14,12 @@ runtime:
       operator: isJson
     - expression: res.body.success
       operator: isFalsy
-    - expression: res.body.message
-      operator: contains
-      value: "Invalid sort value:"
+    - expression: res.body.error
+      operator: eq
+      value: 'Stadium "Parc des Princes" does not exist'
     - expression: res.status
       operator: eq
-      value: "400"
+      value: "404"
     - expression: res.headers['content-type']
       operator: eq
       value: application/json
