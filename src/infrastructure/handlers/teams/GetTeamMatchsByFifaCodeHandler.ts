@@ -1,9 +1,11 @@
+import { MatchStage } from "@domain/enum/enum";
 import { FifaCode } from "@domain/value-objects/FifaCode";
+import { MATCHS } from "@infrastructure/mock/matchs";
 import { TEAMS } from "@infrastructure/mock/teams";
 import { Context } from "hono";
 import { HTTPException } from "hono/http-exception";
 
-export class GetTeamByFifaCodeHandler {
+export class GetTeamMatchsByFifaCodeHandler {
     async handle(c: Context) {
         const fifaCodeString = String(c.req.param("fifaCode"));
         let fifaCode: FifaCode;
@@ -15,8 +17,8 @@ export class GetTeamByFifaCodeHandler {
                     message: "FifaCode " + fifaCodeString + " ne respecte pas les conditions"
                 })
         }
-        const team = TEAMS.find(t => t.code.value == fifaCode.value)
-        if (!team) {
+        const matchs = MATCHS.filter(t => t.awayTeam.code.value == fifaCode.value || t.homeTeam.code.value == fifaCode.value)
+        if (!matchs) {
             throw new HTTPException
                 (404, {
                     message: "Teams " + fifaCode.value + " does not exist"
@@ -25,8 +27,8 @@ export class GetTeamByFifaCodeHandler {
 
         return c.json({
             success: true,
-            message: "Team " + fifaCode.value,
-            data: team
+            message: "Matchs for team " + fifaCode.value,
+            data: matchs
         });
     }
 }
