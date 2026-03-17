@@ -4,8 +4,7 @@ import { GetMatchsHandler } from '@infrastructure/handlers/matchs/GetMatchsHandl
 
 const matchsRoutes = new Hono();
 
-matchsRoutes.get("/", (c) => new GetMatchsHandler().handle(c));
 matchsRoutes.get("/:id", (c) => new GetMatchByIdHandler().handle(c));
-
+matchsRoutes.get("/", (c) => new GetMatchsHandler().handle(c));
 
 export default matchsRoutes;
