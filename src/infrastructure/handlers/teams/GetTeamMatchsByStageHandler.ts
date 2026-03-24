@@ -8,9 +8,7 @@ import { HTTPException } from "hono/http-exception";
 export class GetTeamMatchsByStageHandler {
     async handle(c: Context) {
         const fifaCodeString = String(c.req.param("fifaCode"));
-        console.log(fifaCodeString)
         const stageParam = c.req.param("stage");
-        console.log(stageParam)
         const stage = MatchStage[stageParam as keyof typeof MatchStage];
 
         if (stage == undefined) {
