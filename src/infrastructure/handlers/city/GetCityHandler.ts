@@ -1,5 +1,6 @@
 import { CITIES } from "@infrastructure/mock/cities";
 import { Context } from "hono";
+import { HTTPException } from "hono/http-exception";
 
 export class GetCityHandler {
     async handle(c: Context) {
@@ -14,10 +15,9 @@ export class GetCityHandler {
         const cities = CITIES.filter(t => t.name == sort)
 
         if (!cities) {
-            return c.json({
-                success: false,
-                error: "City :" + sort + " n'as pas de stade liée."
-            }, 404)
+            throw new HTTPException(404, {
+                message: 'Cities "' + name + '" does not exist'
+            });
         } else {
             return c.json({
                 success: true,
