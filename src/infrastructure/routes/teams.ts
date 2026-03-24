@@ -6,7 +6,7 @@ import { GetTeamMatchsByStageHandler } from '@infrastructure/handlers/teams/GetT
 
 const teamsRoutes = new Hono();
 teamsRoutes.get("/:fifaCode/matchs", (c) => new GetTeamMatchsByFifaCodeHandler().handle(c));
-teamsRoutes.get("/:fifaCode/matchs/{stage}", (c) => new GetTeamMatchsByStageHandler().handle(c));
+teamsRoutes.get("/:fifaCode/matchs/:stage", (c) => new GetTeamMatchsByStageHandler().handle(c));
 teamsRoutes.get("/:fifaCode", (c) => new GetTeamByFifaCodeHandler().handle(c));
 teamsRoutes.get("/", (c) => new GetTeamsHandler().handle(c));
 

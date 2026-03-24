@@ -8,11 +8,12 @@ import { HTTPException } from "hono/http-exception";
 export class GetTeamMatchsByStageHandler {
     async handle(c: Context) {
         const fifaCodeString = String(c.req.param("fifaCode"));
+        console.log(fifaCodeString)
         const stageParam = c.req.param("stage");
-
+        console.log(stageParam)
         const stage = MatchStage[stageParam as keyof typeof MatchStage];
-        console.log(stage);
-        if (!stage) {
+
+        if (stage == undefined) {
             throw new HTTPException(400, {
                 message: "Stage " + stageParam + " invalide. Valeurs autorisées: " + Object.keys(MatchStage).join(", ")
             });
@@ -38,8 +39,9 @@ export class GetTeamMatchsByStageHandler {
 
         return c.json({
             success: true,
-            message: "Matchs de l'équipe " + fifaCode.value + " pour le stage " + stageParam,
+            message: "Matchs for team " + fifaCode.value + " at stage " + stageParam,
             data: matches
         });
+
     }
 }
