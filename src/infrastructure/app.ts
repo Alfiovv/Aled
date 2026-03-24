@@ -7,6 +7,7 @@ import countryRoutes from './routes/countries'
 import cityRoutes from './routes/cities'
 import stadiumRoute from './routes/stadiums'
 import { ErrorHandler } from './handlers/error/ErrorHandler'
+import ticketsRoutes from './routes/tickets'
 export const app = new Hono()
 //home
 app.route('/', homeRoutes)
@@ -26,5 +27,8 @@ app.route("/cities", cityRoutes)
 
 //stadium
 app.route("/stadiums", stadiumRoute)
+
+//ticket
+app.route("/tickets", ticketsRoutes)
 
 app.onError(ErrorHandler);
