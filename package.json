@@ -1,7 +1,8 @@
 {
   "name": "worldcup-ticketing-api",
   "scripts": {
-    "dev": "bun run --hot src/index.ts"
+    "dev": "bun run --hot src/index.ts",
+    "seed": "bun run src/infrastructure/database/seed.ts"
   },
   "dependencies": {
     "dotenv": "^17.3.1",

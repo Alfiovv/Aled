@@ -1,27 +1,90 @@
 import { Stadium } from "./Stadium";
 import { Team } from "./Team";
 import { MatchStatus, MatchStage } from "../enum/enum";
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from "typeorm";
 
+@Entity("matchs")
 export class Match {
+    @PrimaryGeneratedColumn()
+    id?: number;
+
+    @ManyToOne(() => Team, { eager: true })
+    homeTeam!: Team;
+
+    @ManyToOne(() => Team, { eager: true })
+    awayTeam!: Team;
+
+    @Column({ default: 0 })
+    homeScore!: number;
+
+    @Column({ default: 0 })
+    awayScore!: number;
+
+    @Column({ nullable: true })
+    homeScoreExtraTime!: number | null;
+
+    @Column({ nullable: true })
+    awayScoreExtraTime!: number | null;
+
+    @Column({ nullable: true })
+    homeScoreShootOut!: number | null;
+
+    @Column({ nullable: true })
+    awayScoreShootOut!: number | null;
+
+    @ManyToOne(() => Stadium, { eager: true })
+    stadium!: Stadium;
+
+    @Column({
+        type: "enum",
+        enum: MatchStatus
+    })
+    status!: MatchStatus;
+
+    @Column({
+        type: "enum",
+        enum: MatchStage
+    })
+    stage!: MatchStage;
+
+    @Column()
+    date!: Date;
+
     constructor(
-        public id: number,
-        public homeTeam: Team,
-        public awayTeam: Team,
-        public homeScore: number = 0,
-        public awayScore: number = 0,
-        public homeScoreExtraTime: number | null,
-        public awayScoreExtraTime: number | null,
-        public homeScoreShootOut: number | null,
-        public awayScoreShootOut: number | null,
-        public stadium: Stadium,
-        public status: MatchStatus,
-        public stage: MatchStage,
-        public date: Date
+        homeTeam?: Team,
+        awayTeam?: Team,
+        stadium?: Stadium,
+        status?: MatchStatus,
+        stage?: MatchStage,
+        date?: Date,
+        homeScore: number = 0,
+        awayScore: number = 0,
+        homeScoreExtraTime: number | null = null,
+        awayScoreExtraTime: number | null = null,
+        homeScoreShootOut: number | null = null,
+        awayScoreShootOut: number | null = null,
     ) {
-        if (id < 0) throw new Error("l'ID ne peut être inférieur à 0");
-        if (homeTeam.name === awayTeam.name) throw new Error("On ne peut pas avoir la même équipe des deux coters");
-        if (homeScore < 0 || awayScore < 0) throw new Error("les scores ne peuvent être inférieur à 0");
+        if (homeTeam) this.homeTeam = homeTeam;
+        if (awayTeam) this.awayTeam = awayTeam;
+        if (stadium) this.stadium = stadium;
+        if (status) this.status = status;
+        if (stage) this.stage = stage;
+        if (date) this.date = date;
+
+        this.homeScore = homeScore;
+        this.awayScore = awayScore;
+        this.homeScoreExtraTime = homeScoreExtraTime;
+        this.awayScoreExtraTime = awayScoreExtraTime;
+        this.homeScoreShootOut = homeScoreShootOut;
+        this.awayScoreShootOut = awayScoreShootOut;
+
+        // Validation métier
+        if (homeTeam && awayTeam && homeTeam.name === awayTeam.name)
+            throw new Error("On ne peut pas avoir la même équipe des deux cotés");
+        if (homeScore < 0 || awayScore < 0)
+            throw new Error("Les scores ne peuvent être inférieurs à 0");
     }
+
     isDraw(): boolean {
         return this.homeScore === this.awayScore;
     }

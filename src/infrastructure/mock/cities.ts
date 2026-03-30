@@ -6,7 +6,7 @@ const mexico = new Country("Mexico", "me");
 const canada = new Country("Canada", "ca");
 
 export const CITIES: City[] = [
-    new City(usa, "Atlanta"),
-    new City(mexico, "Guadalajara"),
-    new City(canada, "Vancouver"),
+    new City("Atlanta", usa),
+    new City("Guadalajara", mexico),
+    new City("Vancouver", canada),
 ];

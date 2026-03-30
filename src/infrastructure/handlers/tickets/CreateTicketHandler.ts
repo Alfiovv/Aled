@@ -28,7 +28,7 @@ export class CreateTicketHandler {
             });
         }
 
-        const newTicket = new Ticket(TICKETS.length + 1, match, seat, customer)
+        const newTicket = new Ticket(match, seat, customer)
 
         TICKETS.push(newTicket);
 

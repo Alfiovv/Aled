@@ -1,11 +1,18 @@
-export class Country {
-    constructor(
-        public name: "USA" | "Mexico" | "Canada",
-        public code: "us" | "me" | "ca"
-    ) {
-        if (name === "USA" && code != "us") throw new Error("Le code n'est pas le bon pour USA");
-        if (name === "Mexico" && code != "me") throw new Error("Le code n'est pas le bon pour Mexico");
-        if (name === "Canada" && code != "ca") throw new Error("Le code n'est pas le bon pour Canada");
+import { Entity, PrimaryGeneratedColumn, Column } from "typeorm";
 
+@Entity("countries")
+export class Country {
+    @PrimaryGeneratedColumn()
+    id?: number;
+
+    @Column()
+    name!: string;
+
+    @Column({ unique: true })
+    code!: string;
+
+    constructor(name?: string, code?: string) {
+        if (name) this.name = name;
+        if (code) this.code = code;
     }
 }
