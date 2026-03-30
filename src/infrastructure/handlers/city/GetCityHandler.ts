@@ -1,30 +1,39 @@
-import { CITIES } from "@infrastructure/mock/cities";
+import { City } from "@domain/entities/City";
+import { AppDataSource } from "@infrastructure/database/AppDataSource";
 import { Context } from "hono";
 import { HTTPException } from "hono/http-exception";
 
 export class GetCityHandler {
     async handle(c: Context) {
         const sort = c.req.query("name");
-        if (sort == undefined) {
-            return c.json({
-                success: true,
-                message: "All stadiums",
-                data: CITIES
-            })
-        }
-        const cities = CITIES.filter(t => t.name == sort)
+        const citiesRepository = AppDataSource.getRepository(City);
 
-        if (!cities) {
-            throw new HTTPException(404, {
-                message: 'Cities "' + name + '" does not exist'
+        if (sort !== undefined) {
+            const cities = await citiesRepository.find({
+                where: { name: sort }
             });
-        } else {
+
+            if (cities.length === 0) {
+                throw new HTTPException(404, {
+                    message: `City "${sort}" does not exist`
+                });
+            }
+
             return c.json({
                 success: true,
-                message: "Cities filtered by name:" + sort,
+                message: "Cities filtered by name: " + sort,
                 data: cities
-            })
+            });
         }
 
+        const cities = await citiesRepository.find({
+            order: { name: "ASC" }
+        });
+
+        return c.json({
+            success: true,
+            message: "All cities",
+            data: cities
+        });
     }
 }

@@ -1,4 +1,5 @@
-import { TEAMS } from "@infrastructure/mock/teams";
+import { Team } from "@domain/entities/Team";
+import { AppDataSource } from "@infrastructure/database/AppDataSource";
 import { Context } from "hono";
 import { HTTPException } from "hono/http-exception";
 
@@ -12,21 +13,18 @@ export class GetTeamsHandler {
             });
         }
 
-        const teamsCopy = [...TEAMS];
+        const teamRepository = AppDataSource.getRepository(Team);
 
-        teamsCopy.sort((a, b) => {
-            const nameA = a.name.toUpperCase();
-            const nameB = b.name.toUpperCase();
-
-            return sort === "name"
-                ? nameA.localeCompare(nameB)
-                : nameB.localeCompare(nameA);
+        const teams = await teamRepository.find({
+            order: {
+                name: sort === "name" ? "ASC" : "DESC"
+            }
         });
 
         return c.json({
             success: true,
             message: "All teams",
-            data: teamsCopy
+            data: teams
         });
     }
 }

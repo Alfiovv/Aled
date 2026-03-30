@@ -1,5 +1,8 @@
+import { Match } from "@domain/entities/Match";
+import { Team } from "@domain/entities/Team";
 import { MatchStage } from "@domain/enum/enum";
 import { FifaCode } from "@domain/value-objects/FifaCode";
+import { AppDataSource } from "@infrastructure/database/AppDataSource";
 import { MATCHS } from "@infrastructure/mock/matchs";
 import { TEAMS } from "@infrastructure/mock/teams";
 import { Context } from "hono";
@@ -26,19 +29,26 @@ export class GetTeamMatchsByStageHandler {
             });
         }
 
-        const team = TEAMS.find(t => t.code.value === fifaCode.value);
+        const teamRepository = AppDataSource.getRepository(Team);
+        const team = await teamRepository.findOneBy({ code: fifaCode.value });
         if (!team) {
             throw new HTTPException(404, {
                 message: "Teams " + fifaCode.value + " does not exist"
             });
         }
-
-        const matches = MATCHS.filter(m => ((m.homeTeam.code.value === fifaCode.value || m.awayTeam.code.value === fifaCode.value) && m.stage === stage));
+        const matchRepository = AppDataSource.getRepository(Match);
+        const matchs = await matchRepository.find({
+            where: [
+                { homeTeam: { code: fifaCode.value }, stage: stage },
+                { awayTeam: { code: fifaCode.value }, stage: stage }
+            ],
+            relations: ["homeTeam", "awayTeam"]
+        });
 
         return c.json({
             success: true,
             message: "Matchs for team " + fifaCode.value + " at stage " + stageParam,
-            data: matches
+            data: matchs
         });
 
     }

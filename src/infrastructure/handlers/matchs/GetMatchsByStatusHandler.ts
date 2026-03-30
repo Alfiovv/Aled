@@ -1,4 +1,6 @@
+import { Match } from "@domain/entities/Match";
 import { MatchStage, MatchStatus } from "@domain/enum/enum";
+import { AppDataSource } from "@infrastructure/database/AppDataSource";
 import { MATCHS } from "@infrastructure/mock/matchs";
 import { Context } from "hono";
 import { HTTPException } from "hono/http-exception";
@@ -15,12 +17,16 @@ export class GetMatchsByStatusHandler {
 
         const statu = MatchStatus[status as keyof typeof MatchStatus];
 
-        const matches = MATCHS.filter(m => m.status === statu);
-
+        const matchRepository = AppDataSource.getRepository(Match);
+        const matchs = await matchRepository.find({
+            where: {
+                status: statu
+            }
+        });
         return c.json({
             success: true,
             message: "Matchs with status " + status,
-            data: matches
+            data: matchs
         }, 200);
     }
 }

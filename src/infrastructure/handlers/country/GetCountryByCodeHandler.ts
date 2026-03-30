@@ -1,29 +1,14 @@
-import { City } from "@domain/entities/City";
 import { Country } from "@domain/entities/Country";
-import { FifaCode } from "@domain/value-objects/FifaCode";
 import { AppDataSource } from "@infrastructure/database/AppDataSource";
-import { CITIES } from "@infrastructure/mock/cities";
 import { HOST_COUNTRIES } from "@infrastructure/mock/countries";
-import { TEAMS } from "@infrastructure/mock/teams";
 import { Context } from "hono";
 import { HTTPException } from "hono/http-exception";
 
-export class GetCountryCitiesHandler {
+export class GetCountryByCodeHandler {
     async handle(c: Context) {
         const code = String(c.req.param("code"))
         const countriesRepository = AppDataSource.getRepository(Country);
-        const citiesRepository = AppDataSource.getRepository(City);
-        const country = await countriesRepository.findOneBy({
-            code: code
-        })
-        const cities = await citiesRepository.find({
-            where: {
-                country: {
-                    code: code
-
-                }
-            }
-        })
+        const country = await countriesRepository.findOneBy({ code: code });
         if (!country) {
             throw new HTTPException(404, {
                 message: 'Country "' + code + '" does not exist'
@@ -31,8 +16,8 @@ export class GetCountryCitiesHandler {
         } else {
             return c.json({
                 success: true,
-                message: "Cities in " + country.name,
-                data: cities
+                message: "Country " + country?.name,
+                data: country
             })
         }
     }

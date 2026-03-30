@@ -1,4 +1,6 @@
+import { Team } from "@domain/entities/Team";
 import { FifaCode } from "@domain/value-objects/FifaCode";
+import { AppDataSource } from "@infrastructure/database/AppDataSource";
 import { TEAMS } from "@infrastructure/mock/teams";
 import { Context } from "hono";
 import { HTTPException } from "hono/http-exception";
@@ -15,7 +17,11 @@ export class GetTeamByFifaCodeHandler {
                     message: "FifaCode " + fifaCodeString + " ne respecte pas les conditions"
                 })
         }
-        const team = TEAMS.find(t => t.code.value == fifaCode.value)
+        const teamRepository = AppDataSource.getRepository(Team);
+        const team = await teamRepository.findOneBy({
+            code: fifaCodeString
+        })
+
         if (!team) {
             throw new HTTPException
                 (404, {

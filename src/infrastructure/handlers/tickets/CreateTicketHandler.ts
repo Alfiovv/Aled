@@ -4,6 +4,8 @@ import { CreateTicketSchema } from '@infrastructure/handlers/tickets/CreateTicke
 import { MATCHS } from "@infrastructure/mock/matchs";
 import { TICKETS } from "@infrastructure/mock/tickets";
 import { Ticket } from "@domain/entities/Ticket";
+import { AppDataSource } from "@infrastructure/database/AppDataSource";
+import { Match } from "@domain/entities/Match";
 
 export class CreateTicketHandler {
     async handle(c: Context) {
@@ -15,22 +17,28 @@ export class CreateTicketHandler {
             });
         }
         const { matchId, seat, customer } = result.data;
-        const match = MATCHS.find(m => m.id === matchId);
+        const matchRepository = AppDataSource.getRepository(Match);
+        const match = await matchRepository.findOneBy({ id: matchId });
         if (!match) {
             throw new HTTPException(404, {
                 message: "Le match n'existe pas."
             });
         }
-        const ticket = TICKETS.find(m => m.seat === seat)
+        const ticketRepository = AppDataSource.getRepository(Ticket);
+        const ticket = await ticketRepository.findOneBy({ seat: seat })
         if (ticket) {
             throw new HTTPException(409, {
                 message: "Siège déjà réserver"
             });
         }
 
-        const newTicket = new Ticket(match, seat, customer)
+        const newTicket = ticketRepository.create({
+            match: match,
+            seat: seat,
+            holder: customer
+        });
 
-        TICKETS.push(newTicket);
+        await ticketRepository.save(newTicket);
 
         return c.json({
             success: true,

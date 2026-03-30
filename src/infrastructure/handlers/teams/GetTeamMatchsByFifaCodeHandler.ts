@@ -1,5 +1,7 @@
+import { Match } from "@domain/entities/Match";
 import { MatchStage } from "@domain/enum/enum";
 import { FifaCode } from "@domain/value-objects/FifaCode";
+import { AppDataSource } from "@infrastructure/database/AppDataSource";
 import { MATCHS } from "@infrastructure/mock/matchs";
 import { TEAMS } from "@infrastructure/mock/teams";
 import { Context } from "hono";
@@ -17,8 +19,14 @@ export class GetTeamMatchsByFifaCodeHandler {
                     message: "FifaCode " + fifaCodeString + " ne respecte pas les conditions"
                 })
         }
-        const matchs = MATCHS.filter(t => t.awayTeam.code.value == fifaCode.value || t.homeTeam.code.value == fifaCode.value)
-        if (!matchs) {
+        const matchRepository = AppDataSource.getRepository(Match);
+        const matchs = await matchRepository.find({
+            where: [
+                { awayTeam: { code: fifaCodeString } },
+                { homeTeam: { code: fifaCodeString } }
+            ],
+        });
+        if (matchs.length > 0) {
             throw new HTTPException
                 (404, {
                     message: "Teams " + fifaCode.value + " does not exist"

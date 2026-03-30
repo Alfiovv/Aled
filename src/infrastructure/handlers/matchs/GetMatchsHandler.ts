@@ -1,4 +1,6 @@
+import { Match } from "@domain/entities/Match";
 import { FifaCode } from "@domain/value-objects/FifaCode";
+import { AppDataSource } from "@infrastructure/database/AppDataSource";
 import { MATCHS } from "@infrastructure/mock/matchs";
 import { Context } from "hono";
 import { HTTPException } from "hono/http-exception";
@@ -27,13 +29,16 @@ export class GetMatchsHandler {
             });
         }
 
-        let matchs = MATCHS;
+        const matchRepository = AppDataSource.getRepository(Match);
+        let matchs = await matchRepository.find({
+            relations: ["homeTeam", "awayTeam"]
+        });
 
         if (fifaCode) {
             matchs = matchs.filter(
                 t =>
-                    t.awayTeam.code.value === fifaCode!.value ||
-                    t.homeTeam.code.value === fifaCode!.value
+                    t.awayTeam.code === fifaCode!.value ||
+                    t.homeTeam.code === fifaCode!.value
             );
         }
 

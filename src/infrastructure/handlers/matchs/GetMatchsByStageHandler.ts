@@ -1,4 +1,6 @@
+import { Match } from "@domain/entities/Match";
 import { MatchStage, MatchStatus } from "@domain/enum/enum";
+import { AppDataSource } from "@infrastructure/database/AppDataSource";
 import { MATCHS } from "@infrastructure/mock/matchs";
 import { Context } from "hono";
 import { HTTPException } from "hono/http-exception";
@@ -6,7 +8,6 @@ import { HTTPException } from "hono/http-exception";
 export class GetMatchsByStageHandler {
     async handle(c: Context) {
         const stageParam = c.req.param("stage");
-        console.log(stageParam)
         if (!(stageParam in MatchStage)) {
             throw new HTTPException
                 (400, {
@@ -15,13 +16,16 @@ export class GetMatchsByStageHandler {
         }
 
         const stage = MatchStage[stageParam as keyof typeof MatchStage];
-
-        const matches = MATCHS.filter(m => m.stage === stage);
-
+        const matchRepository = AppDataSource.getRepository(Match);
+        const matchs = await matchRepository.find({
+            where: {
+                stage: stage
+            }
+        });
         return c.json({
             success: true,
             message: "Matchs at stage " + stageParam,
-            data: matches
+            data: matchs
         }, 200);
     }
 }
