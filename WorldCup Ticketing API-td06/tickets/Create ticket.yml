@@ -10,8 +10,8 @@ http:
     type: json
     data: |-
       {
-        "matchId": 13,
-        "seat": "A111",
+        "matchId": 1,
+        "seat": "A12",
         "customer": {
           "firstname": "John",
           "lastname": "Doe",
@@ -44,9 +44,9 @@ runtime:
     - expression: res.body.data.seat
       operator: eq
       value: A12
-    - expression: res.body.data.holder.email
+    - expression: res.body.data.email
       operator: eq
-      value: jean.dupont@example.com
+      value: john@doe.com
     - expression: res.body.data.match
       operator: isDefined
     - expression: res.body.data.match.id
