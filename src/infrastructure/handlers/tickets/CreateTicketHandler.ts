@@ -6,6 +6,7 @@ import { TICKETS } from "@infrastructure/mock/tickets";
 import { Ticket } from "@domain/entities/Ticket";
 import { AppDataSource } from "@infrastructure/database/AppDataSource";
 import { Match } from "@domain/entities/Match";
+import { Customer } from "@domain/entities/Customer";
 
 export class CreateTicketHandler {
     async handle(c: Context) {
@@ -24,6 +25,15 @@ export class CreateTicketHandler {
                 message: "Le match n'existe pas."
             });
         }
+
+        const customerRepository = AppDataSource.getRepository(Customer);
+        const customers = await customerRepository.findOneBy({ email: customer.email });
+        if (!customers) {
+            throw new HTTPException(404, {
+                message: "L'utilisateur n'existe pas."
+            });
+        }
+
         const ticketRepository = AppDataSource.getRepository(Ticket);
         const ticket = await ticketRepository.findOneBy({ seat: seat })
         if (ticket) {
@@ -35,15 +45,10 @@ export class CreateTicketHandler {
         const newTicket = ticketRepository.create({
             match: match,
             seat: seat,
-            holder: customer
+            holder: customers
         });
-        //a retirer à terme
-        try {
-            await ticketRepository.save(newTicket);
 
-        } catch (error) {
-            console.log(error)
-        }
+        await ticketRepository.save(newTicket);
 
         return c.json({
             success: true,

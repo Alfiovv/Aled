@@ -1,15 +1,15 @@
 export enum MatchStatus {
-    scheduled,
-    live,
-    finished,
-    cancelled
+    scheduled = "scheduled",
+    live = "live",
+    finished = "finished",
+    cancelled = "cancelled"
 }
 
 export enum MatchStage {
-    group,
-    round_of_32,
-    round_of_16,
-    semi_finals,
-    thrid_place,
-    final
+    group = "group",
+    round_of_32 = "round_of_32",
+    round_of_16 = "round_of_16",
+    semi_finals = "semi_finals",
+    third_place = "third_place",
+    final = "final"
 }
