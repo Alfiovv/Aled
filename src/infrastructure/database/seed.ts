@@ -29,6 +29,7 @@ async function clear(): Promise<void> {
         const customerRepository = AppDataSource.getRepository(Customer);
         const countryRepository = AppDataSource.getRepository(Country);
 
+        /*
         // Suppression des données dans l'ordre inverse des dépendances
         await AppDataSource.query("SET FOREIGN_KEY_CHECKS = 0;");
         await ticketRepository.deleteAll();
@@ -39,10 +40,9 @@ async function clear(): Promise<void> {
         await customerRepository.deleteAll();
         await countryRepository.deleteAll();
         await AppDataSource.query("SET FOREIGN_KEY_CHECKS = 1;");
-
-        // Supprime la connexion à la base de données
-        await AppDataSource.destroy();
-
+*/
+        await AppDataSource.dropDatabase();
+        await AppDataSource.synchronize();
         console.log("Database cleared with success");
     } catch (error) {
         console.error(error);

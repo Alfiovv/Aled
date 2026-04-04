@@ -37,8 +37,13 @@ export class CreateTicketHandler {
             seat: seat,
             holder: customer
         });
+        //a retirer à terme
+        try {
+            await ticketRepository.save(newTicket);
 
-        await ticketRepository.save(newTicket);
+        } catch (error) {
+            console.log(error)
+        }
 
         return c.json({
             success: true,
