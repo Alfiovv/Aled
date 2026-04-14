@@ -1,16 +1,18 @@
-import { Match } from "@domain/entities/Match";
+import { MatchService } from "@application/Services/MatchService";
 import { FifaCode } from "@domain/value-objects/FifaCode";
-import { AppDataSource } from "@infrastructure/database/AppDataSource";
-import { MATCHS } from "@infrastructure/mock/matchs";
 import { Context } from "hono";
 import { HTTPException } from "hono/http-exception";
 
 export class GetMatchsHandler {
-    async handle(c: Context) {
+    private readonly matchService: MatchService;
 
+    constructor(matchService: MatchService) {
+        this.matchService = matchService;
+    }
+
+    async handle(c: Context) {
         const sort = c.req.query("team[code]");
         const date = c.req.query("date");
-
         let fifaCode: FifaCode | null = null;
 
         if (sort) {
@@ -22,34 +24,15 @@ export class GetMatchsHandler {
                 });
             }
         }
-
         if (date && !/^\d{4}-\d{2}-\d{2}$/.test(date)) {
             throw new HTTPException(400, {
                 message: "Le format de la date doit être YYYY-MM-DD"
             });
         }
 
-        const matchRepository = AppDataSource.getRepository(Match);
-        let matchs = await matchRepository.find({
-            relations: ["homeTeam", "awayTeam"]
-        });
+        const matchs = await this.matchService.findAll(fifaCode ?? undefined, date);
 
-        if (fifaCode) {
-            matchs = matchs.filter(
-                t =>
-                    t.awayTeam.code === fifaCode!.value ||
-                    t.homeTeam.code === fifaCode!.value
-            );
-        }
-
-        if (date) {
-            matchs = matchs.filter(
-                match => match.date.toISOString().split("T")[0] === date
-            );
-        }
-
-        let message = "Matchs filtered";
-
+        let message = "All matchs";
         if (fifaCode && date) {
             message = "Matchs filtered by team[code]: " + fifaCode.value + " and date: " + date;
         } else if (fifaCode) {
@@ -58,10 +41,6 @@ export class GetMatchsHandler {
             message = "Matchs filtered by date: " + date;
         }
 
-        return c.json({
-            success: true,
-            message: message,
-            data: matchs
-        });
+        return c.json({ success: true, message: message, data: matchs });
     }
 }

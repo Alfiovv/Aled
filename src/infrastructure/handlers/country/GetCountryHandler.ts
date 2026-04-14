@@ -1,16 +1,19 @@
-import { Country } from "@domain/entities/Country";
-import { AppDataSource } from "@infrastructure/database/AppDataSource";
-import { HOST_COUNTRIES } from "@infrastructure/mock/countries";
+import { CountryService } from "@application/Services/CountryService";
 import { Context } from "hono";
 
 export class GetCountryHandler {
+    private readonly countryService: CountryService;
+
+    constructor(countryService: CountryService) {
+        this.countryService = countryService;
+    }
+
     async handle(c: Context) {
-        const countriesRepository = AppDataSource.getRepository(Country);
-        const country = await countriesRepository.find();
+        const countries = await this.countryService.findAll();
         return c.json({
             success: true,
             message: "All countries",
-            data: country
-        })
+            data: countries
+        });
     }
 }

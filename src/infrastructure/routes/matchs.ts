@@ -4,13 +4,18 @@ import { GetMatchsHandler } from '@infrastructure/handlers/matchs/GetMatchsHandl
 import { GetMatchByStage } from '@infrastructure/handlers/matchs/GetMatchByStage';
 import { GetMatchsByStatusHandler } from '@infrastructure/handlers/matchs/GetMatchsByStatusHandler';
 import { GetMatchsByStageHandler } from '@infrastructure/handlers/matchs/GetMatchsByStageHandler';
+import { MatchService } from '@application/Services/MatchService';
+import { Match } from '@domain/entities/Match';
+import { AppDataSource } from '@infrastructure/database/AppDataSource';
 
 const matchsRoutes = new Hono();
 
-matchsRoutes.get("/status/:status", (c) => new GetMatchsByStatusHandler().handle(c));
-matchsRoutes.get("/stages/:stage", (c) => new GetMatchsByStageHandler().handle(c));
-matchsRoutes.get("/:stage", (c) => new GetMatchByStage().handle(c));
-matchsRoutes.get("/:id", (c) => new GetMatchByIdHandler().handle(c));
-matchsRoutes.get("/", (c) => new GetMatchsHandler().handle(c));
+const matchService = new MatchService(AppDataSource.getRepository(Match));
+
+matchsRoutes.get("/status/:status", (c) => new GetMatchsByStatusHandler(matchService).handle(c));
+matchsRoutes.get("/stages/:stage", (c) => new GetMatchsByStageHandler(matchService).handle(c));
+//matchsRoutes.get("/:stage", (c) => new GetMatchByStage(matchService).handle(c));
+matchsRoutes.get("/:id", (c) => new GetMatchByIdHandler(matchService).handle(c));
+matchsRoutes.get("/", (c) => new GetMatchsHandler(matchService).handle(c));
 
 export default matchsRoutes;

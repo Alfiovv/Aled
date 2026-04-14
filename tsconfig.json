@@ -1,15 +1,18 @@
 {
   "compilerOptions": {
-    "baseUrl": "./src",
+    "types": [
+      "bun",
+      "node"
+    ],
     "paths": {
       "@domain/*": [
-        "domain/*"
+        "./src/domain/*"
       ],
       "@infrastructure/*": [
-        "infrastructure/*"
+        "./src/infrastructure/*"
       ],
       "@application/*": [
-        "application/*"
+        "./src/application/*"
       ],
     },
     "strict": true,
