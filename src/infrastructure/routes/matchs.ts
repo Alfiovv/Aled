@@ -14,8 +14,8 @@ const matchService = new MatchService(AppDataSource.getRepository(Match));
 
 matchsRoutes.get("/status/:status", (c) => new GetMatchsByStatusHandler(matchService).handle(c));
 matchsRoutes.get("/stages/:stage", (c) => new GetMatchsByStageHandler(matchService).handle(c));
-//matchsRoutes.get("/:stage", (c) => new GetMatchByStage(matchService).handle(c));
 matchsRoutes.get("/:id", (c) => new GetMatchByIdHandler(matchService).handle(c));
+matchsRoutes.get("/:stage", (c) => new GetMatchByStage(matchService).handle(c));
 matchsRoutes.get("/", (c) => new GetMatchsHandler(matchService).handle(c));
 
 export default matchsRoutes;

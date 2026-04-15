@@ -2,6 +2,7 @@ import { Repository, FindOptionsWhere } from "typeorm";
 import { Team } from "@domain/entities/Team";
 import { Match } from "@domain/entities/Match";
 import { MatchStage } from "@domain/enum/enum";
+import { NotFoundError } from "@domain/errors/NotFoundError";
 
 export class TeamService {
     private readonly teamsRepository: Repository<Team>;
@@ -19,8 +20,12 @@ export class TeamService {
         return this.teamsRepository.find({ order: { name: order } });
     }
 
-    async findByFifaCode(code: string): Promise<Team | null> {
-        return this.teamsRepository.findOneBy({ code: code });
+    async findByFifaCode(code: string): Promise<Team> {
+        const team = await this.teamsRepository.findOneBy({ code: code });
+        if (!team) {
+            throw new NotFoundError("Teams " + code + " does not exist");
+        }
+        return team;
     }
 
     async findMatchsByFifaCode(code: string): Promise<Match[]> {

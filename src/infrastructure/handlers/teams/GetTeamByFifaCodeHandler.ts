@@ -1,4 +1,5 @@
 import { TeamService } from "@application/Services/TeamService";
+import { NotFoundError } from "@domain/errors/NotFoundError";
 import { FifaCode } from "@domain/value-objects/FifaCode";
 import { Context } from "hono";
 import { HTTPException } from "hono/http-exception";
@@ -20,16 +21,18 @@ export class GetTeamByFifaCodeHandler {
                 message: "FifaCode " + fifaCodeString + " ne respecte pas les conditions"
             });
         }
-        const team = await this.teamService.findByFifaCode(fifaCodeString);
-        if (!team) {
-            throw new HTTPException(404, {
-                message: "Teams " + fifaCode.value + " does not exist"
+        try {
+            const team = await this.teamService.findByFifaCode(fifaCodeString);
+            return c.json({
+                success: true,
+                message: "Team " + fifaCode.value,
+                data: team
             });
+        } catch (error) {
+            if (error instanceof NotFoundError) {
+                throw new HTTPException(404, { message: error.message });
+            }
+            throw error;
         }
-        return c.json({
-            success: true,
-            message: "Team " + fifaCode.value,
-            data: team
-        });
     }
 }

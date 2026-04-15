@@ -2,6 +2,7 @@ import { Repository } from "typeorm";
 import { Ticket } from "@domain/entities/Ticket";
 import { Match } from "@domain/entities/Match";
 import { Customer } from "@domain/entities/Customer";
+import { NotFoundError } from "@domain/errors/NotFoundError";
 
 export class TicketService {
     private readonly ticketsRepository: Repository<Ticket>;
@@ -18,24 +19,28 @@ export class TicketService {
         this.customerRepository = customerRepository;
     }
 
-    async findMatchById(matchId: number): Promise<Match | null> {
-        return this.matchRepository.findOneBy({ id: matchId });
-    }
+    async createTicket(matchId: number, seat: string, email: string): Promise<Ticket> {
+        const match = await this.matchRepository.findOneBy({ id: matchId });
+        if (!match) {
+            throw new NotFoundError("Le match n'existe pas.");
+        }
 
-    async findCustomerByEmail(email: string): Promise<Customer | null> {
-        return this.customerRepository.findOneBy({ email: email });
-    }
+        const customer = await this.customerRepository.findOneBy({ email });
+        if (!customer) {
+            throw new NotFoundError("L'utilisateur n'existe pas.");
+        }
 
-    async findTicketBySeat(seat: string): Promise<Ticket | null> {
-        return this.ticketsRepository.findOneBy({ seat: seat });
-    }
+        const ticket = await this.ticketsRepository.findOneBy({ seat });
+        if (ticket) {
+            throw new Error("Siège déjà réserver");
+        }
 
-    async createTicket(match: Match, seat: string, customer: Customer): Promise<Ticket> {
         const newTicket = this.ticketsRepository.create({
-            match: match,
-            seat: seat,
+            match,
+            seat,
             holder: customer
         });
+
         return this.ticketsRepository.save(newTicket);
     }
 }

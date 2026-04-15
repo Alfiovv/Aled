@@ -1,6 +1,5 @@
 import { CityService } from "@application/Services/CityService";
-import { City } from "@domain/entities/City";
-import { AppDataSource } from "@infrastructure/database/AppDataSource";
+import { NotFoundError } from "@domain/errors/NotFoundError";
 import { Context } from "hono";
 import { HTTPException } from "hono/http-exception";
 
@@ -10,28 +9,29 @@ export class GetCityHandler {
     constructor(cityService: CityService) {
         this.cityService = cityService;
     }
+
     async handle(c: Context) {
         const sort = c.req.query("name");
-
-        if (sort !== undefined) {
-            const cities = await this.cityService.findByName(sort);
-            if (!cities) {
-                throw new HTTPException(404, {
-                    message: `City "${sort}" does not exist`
+        try {
+            if (sort !== undefined) {
+                const city = await this.cityService.findByNameTable(sort);
+                return c.json({
+                    success: true,
+                    message: "Cities filtered by name: " + sort,
+                    data: city
                 });
             }
+            const cities = await this.cityService.findAll();
             return c.json({
                 success: true,
-                message: "Cities filtered by name: " + sort,
+                message: "All cities",
                 data: cities
             });
+        } catch (error) {
+            if (error instanceof NotFoundError) {
+                throw new HTTPException(404, { message: error.message });
+            }
+            throw error;
         }
-
-        const cities = await this.cityService.findAll();
-        return c.json({
-            success: true,
-            message: "All cities",
-            data: cities
-        });
     }
 }

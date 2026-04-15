@@ -1,7 +1,7 @@
-import { Repository } from "typeorm";
+import { Repository, FindOptionsWhere } from "typeorm";
 import { Country } from "@domain/entities/Country";
 import { City } from "@domain/entities/City";
-import { FindOptionsWhere } from "typeorm";
+import { NotFoundError } from "@domain/errors/NotFoundError";
 
 export class CountryService {
     private readonly countriesRepository: Repository<Country>;
@@ -19,14 +19,16 @@ export class CountryService {
         return this.countriesRepository.find();
     }
 
-    async findByCode(code: string): Promise<Country | null> {
-        return this.countriesRepository.findOneBy({ code: code });
+    async findByCode(code: string): Promise<Country> {
+        const country = await this.countriesRepository.findOneBy({ code: code });
+        if (!country) {
+            throw new NotFoundError('Country "' + code + '" does not exist');
+        }
+        return country;
     }
 
     async findCitiesByCode(code: string): Promise<City[]> {
-        const where: FindOptionsWhere<City> = {
-            country: { code: code }
-        };
+        const where: FindOptionsWhere<City> = { country: { code: code } };
         return this.citiesRepository.find({ where });
     }
 }

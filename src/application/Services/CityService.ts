@@ -1,5 +1,6 @@
 import { Repository } from "typeorm";
 import { City } from "@domain/entities/City";
+import { NotFoundError } from "@domain/errors/NotFoundError";
 
 export class CityService {
     private readonly citiesRepository: Repository<City>;
@@ -8,17 +9,23 @@ export class CityService {
         this.citiesRepository = citiesRepository;
     }
 
-    async findByName(name: string): Promise<City | null> {
-        const cities = await this.citiesRepository.findOneBy({
-            name: name
-        });
+    async findByNameTable(name: string): Promise<City[]> {
+        const city = await this.citiesRepository.findBy({ name: name });
+        if (city.length === 0) {
+            throw new NotFoundError("City " + name + " does not exist");
+        }
+        return city;
+    }
 
-        return cities;
+    async findByName(name: string): Promise<City> {
+        const city = await this.citiesRepository.findOneBy({ name: name });
+        if (!city) {
+            throw new NotFoundError("City " + name + " does not exist");
+        }
+        return city;
     }
 
     async findAll(): Promise<City[]> {
-        return this.citiesRepository.find({
-            order: { name: "ASC" }
-        });
+        return this.citiesRepository.find({ order: { name: "ASC" } });
     }
 }

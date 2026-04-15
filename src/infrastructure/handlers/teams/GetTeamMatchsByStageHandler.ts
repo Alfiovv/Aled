@@ -1,4 +1,5 @@
 import { TeamService } from "@application/Services/TeamService";
+import { NotFoundError } from "@domain/errors/NotFoundError";
 import { MatchStage } from "@domain/enum/enum";
 import { FifaCode } from "@domain/value-objects/FifaCode";
 import { Context } from "hono";
@@ -28,17 +29,19 @@ export class GetTeamMatchsByStageHandler {
                 message: "FifaCode " + fifaCodeString + " ne respecte pas les conditions"
             });
         }
-        const team = await this.teamService.findByFifaCode(fifaCodeString);
-        if (!team) {
-            throw new HTTPException(404, {
-                message: "Teams " + fifaCode.value + " does not exist"
+        try {
+            await this.teamService.findByFifaCode(fifaCodeString);
+            const matchs = await this.teamService.findMatchsByFifaCodeAndStage(fifaCode.value, stage);
+            return c.json({
+                success: true,
+                message: "Matchs for team " + fifaCode.value + " at stage " + stageParam,
+                data: matchs
             });
+        } catch (error) {
+            if (error instanceof NotFoundError) {
+                throw new HTTPException(404, { message: error.message });
+            }
+            throw error;
         }
-        const matchs = await this.teamService.findMatchsByFifaCodeAndStage(fifaCode.value, stage);
-        return c.json({
-            success: true,
-            message: "Matchs for team " + fifaCode.value + " at stage " + stageParam,
-            data: matchs
-        });
     }
 }

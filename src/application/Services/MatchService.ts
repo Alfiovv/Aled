@@ -2,6 +2,7 @@ import { Repository, FindOptionsWhere } from "typeorm";
 import { Match } from "@domain/entities/Match";
 import { MatchStage, MatchStatus } from "@domain/enum/enum";
 import { FifaCode } from "@domain/value-objects/FifaCode";
+import { NotFoundError } from "@domain/errors/NotFoundError";
 
 export class MatchService {
     private readonly matchsRepository: Repository<Match>;
@@ -10,8 +11,12 @@ export class MatchService {
         this.matchsRepository = matchsRepository;
     }
 
-    async findById(id: number): Promise<Match | null> {
-        return this.matchsRepository.findOneBy({ id: id });
+    async findById(id: number): Promise<Match> {
+        const match = await this.matchsRepository.findOneBy({ id: id });
+        if (!match) {
+            throw new NotFoundError('Match " + id + " does not exist');
+        }
+        return match;
     }
 
     async findByStage(stage: MatchStage): Promise<Match[]> {
@@ -42,9 +47,12 @@ export class MatchService {
     }
 
     async matchByCityStadium(city: string): Promise<Match[]> {
-        const where: FindOptionsWhere<Match> = {
-            stadium: { city: { name: city } }
-        };
-        return this.matchsRepository.find({ where });
+        return this.matchsRepository.findBy({
+            stadium: {
+                city: {
+                    name: city
+                }
+            }
+        });
     }
 }

@@ -1,6 +1,7 @@
 import { Repository, FindOptionsWhere } from "typeorm";
 import { Stadium } from "@domain/entities/Stadium";
 import { Match } from "@domain/entities/Match";
+import { NotFoundError } from "@domain/errors/NotFoundError";
 
 export class StadiumService {
     private readonly stadiumsRepository: Repository<Stadium>;
@@ -14,16 +15,53 @@ export class StadiumService {
         this.matchsRepository = matchsRepository;
     }
 
-    async findByName(name: string): Promise<Stadium | null> {
-        return this.stadiumsRepository.findOneBy({ name: name });
+    async findByName(name: string): Promise<Stadium> {
+        const stadium = await this.stadiumsRepository.findOneBy({ name: name });
+        if (!stadium) {
+            throw new NotFoundError('Stadiums "' + name + '" does not exist');
+        }
+        return stadium;
     }
 
-    async findAll(cityName?: string): Promise<Stadium[]> {
-        let stadiums = await this.stadiumsRepository.find({ relations: ["city"] });
-        if (cityName) {
-            stadiums = stadiums.filter(t => t.city.name === cityName);
+    async findAllByCityName(cityName: string): Promise<Stadium[]> {
+        const stadiums = await this.findAll();
+
+        const result = stadiums.filter(s => s.city.name.toUpperCase() === cityName.toUpperCase());
+
+        if (result.length === 0) {
+            throw new NotFoundError("City: " + cityName + " n'a pas de stade lié.");
         }
-        return stadiums;
+
+        return result;
+    }
+
+    async findAllByCountryCode(countryCode: string): Promise<Stadium[]> {
+        const stadiums = await this.findAll();
+
+        const result = stadiums.filter(s => s.city.country.code === countryCode);
+
+        if (result.length === 0) {
+            throw new NotFoundError("Country code : " + countryCode + " n'a pas de stade lié.");
+        }
+
+        return result;
+    }
+
+    async findAllByCountryName(countryName: string): Promise<Stadium[]> {
+        const stadiums = await this.findAll();
+        const result = stadiums.filter(s => s.city.country.name.toUpperCase() === countryName.toUpperCase());
+
+        if (result.length === 0) {
+            throw new NotFoundError("Country: " + countryName + " n'a pas de stade lié.");
+        }
+
+        return result;
+    }
+
+    async findAll(): Promise<Stadium[]> {
+        return this.stadiumsRepository.find({
+            relations: ["city", "city.country"]
+        });
     }
 
     async findMatchsByStadium(name: string): Promise<Match[]> {

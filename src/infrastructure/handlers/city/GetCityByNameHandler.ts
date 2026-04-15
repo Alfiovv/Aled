@@ -1,4 +1,5 @@
 import { CityService } from "@application/Services/CityService";
+import { NotFoundError } from "@domain/errors/NotFoundError";
 import { Context } from "hono";
 import { HTTPException } from "hono/http-exception";
 
@@ -11,16 +12,18 @@ export class GetCityByNameHandler {
 
     async handle(c: Context) {
         const name = c.req.param("name");
-        const cities = await this.cityService.findByName(name);
-        if (cities.length === 0) {
-            throw new HTTPException(404, {
-                message: "City " + name + " does not exist"
+        try {
+            const city = await this.cityService.findByName(name);
+            return c.json({
+                success: true,
+                message: "City " + name,
+                data: city
             });
+        } catch (error) {
+            if (error instanceof NotFoundError) {
+                throw new HTTPException(404, { message: error.message });
+            }
+            throw error;
         }
-        return c.json({
-            success: true,
-            message: "City " + name,
-            data: cities
-        });
     }
 }
