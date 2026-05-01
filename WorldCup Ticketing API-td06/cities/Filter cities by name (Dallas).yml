@@ -20,7 +20,7 @@ runtime:
       operator: isTruthy
     - expression: res.body.message
       operator: eq
-      value: "Cities filtered by name: dallas"
+      value: "Cities filtered by name: Atlanta"
     - expression: res.status
       operator: eq
       value: "200"

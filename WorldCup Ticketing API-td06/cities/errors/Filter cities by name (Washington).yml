@@ -5,10 +5,10 @@ info:
 
 http:
   method: GET
-  url: "{{host}}/cities?name=washington"
+  url: "{{host}}/cities?name=Paris"
   params:
     - name: name
-      value: washington
+      value: Paris
       type: query
   auth: inherit
 

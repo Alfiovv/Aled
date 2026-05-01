@@ -26,7 +26,7 @@ export class GetMatchsHandler {
         }
         if (date && !/^\d{4}-\d{2}-\d{2}$/.test(date)) {
             throw new HTTPException(400, {
-                message: "Le format de la date doit être YYYY-MM-DD"
+                message: "Invalid date format"
             });
         }
 

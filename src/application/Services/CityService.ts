@@ -11,16 +11,13 @@ export class CityService {
 
     async findByNameTable(name: string): Promise<City[]> {
         const city = await this.citiesRepository.findBy({ name: name });
-        if (city.length === 0) {
-            throw new NotFoundError("City " + name + " does not exist");
-        }
         return city;
     }
 
     async findByName(name: string): Promise<City> {
         const city = await this.citiesRepository.findOneBy({ name: name });
         if (!city) {
-            throw new NotFoundError("City " + name + " does not exist");
+            throw new NotFoundError('City "' + name + '" does not exist');
         }
         return city;
     }

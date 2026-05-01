@@ -18,7 +18,7 @@ export class GetTeamMatchsByStageHandler {
         const stage = MatchStage[stageParam as keyof typeof MatchStage];
         if (stage == undefined) {
             throw new HTTPException(400, {
-                message: "Stage " + stageParam + " invalide. Valeurs autorisées: " + Object.keys(MatchStage).join(", ")
+                message: 'Invalid stage: "' + stageParam + '"'
             });
         }
         let fifaCode: FifaCode;
@@ -26,7 +26,7 @@ export class GetTeamMatchsByStageHandler {
             fifaCode = new FifaCode(fifaCodeString);
         } catch (e) {
             throw new HTTPException(400, {
-                message: "FifaCode " + fifaCodeString + " ne respecte pas les conditions"
+                message: 'Invalid FIFA code: "' + fifaCodeString + '"'
             });
         }
         try {

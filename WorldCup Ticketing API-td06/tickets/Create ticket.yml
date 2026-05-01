@@ -44,7 +44,7 @@ runtime:
     - expression: res.body.data.seat
       operator: eq
       value: A12
-    - expression: res.body.data.email
+    - expression: res.body.data.holder.email
       operator: eq
       value: john@doe.com
     - expression: res.body.data.match

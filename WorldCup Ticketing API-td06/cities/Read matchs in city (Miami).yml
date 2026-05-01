@@ -5,7 +5,7 @@ info:
 
 http:
   method: GET
-  url: "{{host}}/cities/Miami/matchs"
+  url: "{{host}}/cities/Atlanta/matchs"
   auth: inherit
 
 runtime:

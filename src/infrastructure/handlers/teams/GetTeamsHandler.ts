@@ -11,13 +11,29 @@ export class GetTeamsHandler {
 
     async handle(c: Context) {
         const sort = c.req.query("sort") || "name";
-        if (sort !== "name" && sort !== "-name") {
+        const name = c.req.query("name");
+        const allowedSortValues = ["name", "-name"];
+        if (!allowedSortValues.includes(sort)) {
             throw new HTTPException(400, { message: "Invalid sort value" });
         }
-        const teams = await this.teamService.findAll(sort === "name" ? "ASC" : "DESC");
+        let teams;
+        if (name != undefined) {
+            teams = await this.teamService.findFiltredByName(name, sort === "name" ? "ASC" : "DESC");
+        } else {
+            teams = await this.teamService.findAll(sort === "name" ? "ASC" : "DESC");
+        }
+
+
+        let message = "All teams";
+        if (name != undefined) {
+            message = "Teams filtered by name: " + name;
+        } else {
+            message = "All teams";
+        }
+
         return c.json({
             success: true,
-            message: "All teams",
+            message: message,
             data: teams
         });
     }

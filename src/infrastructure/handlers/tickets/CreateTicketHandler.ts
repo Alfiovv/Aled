@@ -3,6 +3,7 @@ import { CreateTicketSchema } from "@infrastructure/handlers/tickets/CreateTicke
 import { Context } from "hono";
 import { HTTPException } from "hono/http-exception";
 import { NotFoundError } from "@domain/errors/NotFoundError";
+import { ConflictError } from "@domain/errors/ConflictError";
 
 export class CreateTicketHandler {
     private readonly ticketService: TicketService;
@@ -16,7 +17,7 @@ export class CreateTicketHandler {
         const result = CreateTicketSchema.safeParse(body);
 
         if (!result.success) {
-            throw new HTTPException(400, { message: "Validation failed" });
+            throw new HTTPException(400, { message: "Can't create ticket (wrong or missing values)" });
         }
 
         const { matchId, seat, customer } = result.data;
@@ -39,7 +40,7 @@ export class CreateTicketHandler {
                 throw new HTTPException(404, { message: error.message });
             }
 
-            if (error instanceof Error && error.message === "Siège déjà réserver") {
+            if (error instanceof ConflictError) {
                 throw new HTTPException(409, { message: error.message });
             }
 

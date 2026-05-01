@@ -12,11 +12,7 @@ export class GetMatchsByStageHandler {
 
     async handle(c: Context) {
         const stageParam = c.req.param("stage");
-        if (!(stageParam in MatchStage)) {
-            throw new HTTPException(400, { message: 'Stage invalide' });
-        }
-        const stage = MatchStage[stageParam as keyof typeof MatchStage];
-        const matchs = await this.matchService.findByStage(stage);
+        const matchs = await this.matchService.findByStage(stageParam);
         return c.json({
             success: true,
             message: "Matchs at stage " + stageParam,

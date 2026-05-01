@@ -20,6 +20,13 @@ export class TeamService {
         return this.teamsRepository.find({ order: { name: order } });
     }
 
+    async findFiltredByName(name: string, order: "ASC" | "DESC"): Promise<Team[]> {
+        return this.teamsRepository.find({
+            where: { name: name },
+            order: { name: order }
+        });
+    }
+
     async findByFifaCode(code: string): Promise<Team> {
         const team = await this.teamsRepository.findOneBy({ code: code });
         if (!team) {

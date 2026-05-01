@@ -18,31 +18,20 @@ export class StadiumService {
     async findByName(name: string): Promise<Stadium> {
         const stadium = await this.stadiumsRepository.findOneBy({ name: name });
         if (!stadium) {
-            throw new NotFoundError('Stadiums "' + name + '" does not exist');
+            throw new NotFoundError('Stadium "' + name + '" does not exist');
         }
         return stadium;
     }
 
     async findAllByCityName(cityName: string): Promise<Stadium[]> {
         const stadiums = await this.findAll();
-
         const result = stadiums.filter(s => s.city.name.toUpperCase() === cityName.toUpperCase());
-
-        if (result.length === 0) {
-            throw new NotFoundError("City: " + cityName + " n'a pas de stade lié.");
-        }
-
         return result;
     }
 
     async findAllByCountryCode(countryCode: string): Promise<Stadium[]> {
         const stadiums = await this.findAll();
-
         const result = stadiums.filter(s => s.city.country.code === countryCode);
-
-        if (result.length === 0) {
-            throw new NotFoundError("Country code : " + countryCode + " n'a pas de stade lié.");
-        }
 
         return result;
     }
@@ -50,10 +39,6 @@ export class StadiumService {
     async findAllByCountryName(countryName: string): Promise<Stadium[]> {
         const stadiums = await this.findAll();
         const result = stadiums.filter(s => s.city.country.name.toUpperCase() === countryName.toUpperCase());
-
-        if (result.length === 0) {
-            throw new NotFoundError("Country: " + countryName + " n'a pas de stade lié.");
-        }
 
         return result;
     }

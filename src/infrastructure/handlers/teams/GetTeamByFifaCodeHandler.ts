@@ -18,7 +18,7 @@ export class GetTeamByFifaCodeHandler {
             fifaCode = new FifaCode(fifaCodeString);
         } catch (e) {
             throw new HTTPException(400, {
-                message: "FifaCode " + fifaCodeString + " ne respecte pas les conditions"
+                message: 'Invalid FIFA code: "' + fifaCodeString + '"'
             });
         }
         try {

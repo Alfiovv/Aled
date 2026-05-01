@@ -16,4 +16,12 @@ export class Team {
         if (name) this.name = name;
         if (code) this.code = code.value;
     }
+
+    toJSON() {
+        return {
+            id: this.id,
+            name: this.name,
+            code: { value: this.code }
+        }
+    }
 }

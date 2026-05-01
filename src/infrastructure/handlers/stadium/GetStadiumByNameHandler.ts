@@ -16,7 +16,7 @@ export class GetStadiumByNameHandler {
             const stadium = await this.stadiumService.findByName(name);
             return c.json({
                 success: true,
-                message: "Stadiums " + name,
+                message: "Stadium " + name,
                 data: stadium
             });
         } catch (error) {

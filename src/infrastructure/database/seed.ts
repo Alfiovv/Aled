@@ -29,18 +29,6 @@ async function clear(): Promise<void> {
         const customerRepository = AppDataSource.getRepository(Customer);
         const countryRepository = AppDataSource.getRepository(Country);
 
-        /*
-        // Suppression des données dans l'ordre inverse des dépendances
-        await AppDataSource.query("SET FOREIGN_KEY_CHECKS = 0;");
-        await ticketRepository.deleteAll();
-        await matchRepository.deleteAll();
-        await stadiumRepository.deleteAll();
-        await cityRepository.deleteAll();
-        await teamRepository.deleteAll();
-        await customerRepository.deleteAll();
-        await countryRepository.deleteAll();
-        await AppDataSource.query("SET FOREIGN_KEY_CHECKS = 1;");
-*/
         await AppDataSource.dropDatabase();
         await AppDataSource.synchronize();
         console.log("Database cleared with success");
